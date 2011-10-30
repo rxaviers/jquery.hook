@@ -34,22 +34,23 @@
 *
 */
 ;(function($){
-	$.hook = function (fns) {
+	$.hook = function (fns, trigger_el) {
 		fns = typeof fns === 'string' ? 
 			fns.split(' ') : 
 			$.makeArray(fns)
 		;
 		
 		jQuery.each( fns, function (i, method) {
-			var old = $.fn[ method ];
+			var $document = $(document), old = $.fn[ method ];
 			
 			if ( old && !old.__hookold ) {
 				
 				$.fn[ method ] = function () {
-					this.triggerHandler('onbefore'+method);
-					this.triggerHandler('on'+method);
+					trigger_el = trigger_el ? trigger_el : this;
+					trigger_el.triggerHandler('onbefore'+method);
+					trigger_el.triggerHandler('on'+method);
 					var ret = old.apply(this, arguments);
-					this.triggerHandler('onafter'+method);
+					trigger_el.triggerHandler('onafter'+method);
 					return ret;
 				};
 				
